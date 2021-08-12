@@ -1,6 +1,16 @@
 const bCrypt = require('bcrypt');
 const User = require('../models/userModel');
 
+exports.userValidator = (fields, req) => {
+    let errors = [];
+    fields.forEach(field => {
+        if(req[field] === '' || req[field] === null || req[field] === undefined){
+            return errors.push(field + " is required");
+        }
+    });
+    return errors;
+}
+
 exports.userController = (req,res) => {
     bCrypt.hash(req.body.password, 10, (err, hash) => {
         if(err){

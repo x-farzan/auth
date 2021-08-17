@@ -72,7 +72,7 @@ exports.tokenVerifier = (req,res,next) =>{
         const token = req.headers.authorization.split(" ")[1];
         jwt.verify(token, process.env.JWT_KEY, (err,auth) => {
             if(auth){
-                // console.log(auth);
+                console.log(auth);
                 req.userData = auth;
                 next();
             } 
@@ -131,3 +131,54 @@ exports.changePasswordMiddleware = (req,res,next) => {
         })
     })
 }
+
+exports.resetRequestMiddleware = (req,res,next) => {
+    let _errors = userFieldsValidator.userFieldsValidator(['email'], req.body);
+    if(_errors.length > 0){
+        res.send(_errors);
+    }
+    User.find({email: req.body.email})
+        .exec()
+        .then(user =>{
+            if(user.length < 1){
+                return res.status(401).json({
+                    message : "Email not found."
+                });
+            }
+            req.myData = {
+                user:user[0],
+                email:req.body.email
+            }
+            next();
+            
+        })
+        .catch(err => {
+            console.log("ERROR",err);
+            return res.status(500).json({
+                error: err
+            });
+        });
+}
+
+// exports.resetPasswordMiddleware = (req,res,next) => {
+//     try{
+//         const token = req.headers.authorization.split(" ")[1];
+//         jwt.verify(token, process.env.JWT_KEY, (err,result) => {
+//             if(result){
+//                 console.log(result);
+//                 req.myData = result;
+//                 //next();
+//             }
+//             else{
+//                 res.json({
+//                     message:"Token Expired."
+//                 })
+//             }
+//         })
+//     }
+//     catch(error){
+//         res.json({
+//             message:error
+//         })
+//     }
+// }

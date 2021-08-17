@@ -1,6 +1,9 @@
 const bCrypt = require('bcrypt');
 const User = require('../models/model');
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
+const nodemailer = require("nodemailer");
+
 
 // field validator ffunction
 exports.userFieldsValidator = (fields, req) => {
@@ -85,7 +88,7 @@ exports.changePassword = (req,res) => {
                     newPassword:  req.myData.newPassword
                 })
             }).catch(err => {
-                res.json({message: "PAssword update failed"})
+                res.json({message: "Password update failed"})
             })
         }
         else{
@@ -94,4 +97,110 @@ exports.changePassword = (req,res) => {
             })
         }
     })
+}
+
+//nodemailer
+exports.sendEmail = async (token) => {
+    var transporter = nodemailer.createTransport({
+        host: "smtp.mailtrap.io",
+        port: 2525,
+        auth: {
+          user: "ee6f9fa8cef44e",
+          pass: "45a93a72275616"
+        }
+    });
+    
+    var mailOptions = {
+        from: 'farzan.hassan@optimusfox.com',
+        to: 'farzanhassan245@gmail.com',
+        subject: 'Sending Email using Node.js',
+        text: `Hello! This is your reset token : ${token}`
+    };
+    
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            console.log("sendmail" + error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+};
+
+
+//Password reset request
+exports.resetRequest = (req, res) => {
+    //email should be the one in the DB
+    console.log(req.myData.email);
+    const resetToken = jwt.sign({email:req.myData.email}, process.env.JWT_KEY, {expiresIn: "24h"});
+    if(this.sendEmail(resetToken)){
+        res.json({
+            message:"Email sent successfully!"
+        })
+    }
+    console.log("HERE");
+    req.myData.user.resetToken = resetToken;
+    req.myData.user.save().then(result => {
+        res.json({
+            message:"Token updated in DB.",
+        })
+    }).catch(err => {
+        res.json({message: "Token updation in DB failed."})
+    })
+    
+}
+
+exports.resetPassword = (req,res) => {
+    const newPassword = req.body.password
+    User.find({email: req.userData.email})
+        .exec()
+        .then(user =>{
+            if(user.length < 1){
+                return res.status(401).json({
+                    message : "Email not found."
+                });
+            }
+            bCrypt.hash(newPassword, 10, (err,hash)=>{
+                if(hash){
+                    //console.log(req.userData);
+                    user[0].password = hash;
+                    user[0].save().then(result => {
+                        res.json({
+                            message:"Password reset successfully!"
+                        })
+                    }).catch(err => {
+                        res.json({
+                            message:"Password reset failed due to : ${err}"
+                        })
+                    })
+                }else{
+                    res.json({
+                        message:"Couldn't hash the password"
+                    })
+                }
+            })
+        })
+        .catch(err => {
+            console.log("ERROR",err);
+            return res.status(500).json({
+                error: err
+            });
+        });
+    // bCrypt.hash(newPassword, 10, (err,hash)=>{
+    //     if(hash){
+    //         req.userData.password = hash;
+    //         req.userData.save().then(result => {
+    //             res.json({
+    //                 message:"Password updated successfully!"
+    //             })
+    //         }).catch(err => {
+    //             res.json({
+    //                 message:"Password updation failed due to : ${err}"
+    //             })
+    //         })
+    //     }else{
+    //         res.json({
+    //             message:"Couldn't hash the password"
+    //         })
+    //     }
+    // })
 }

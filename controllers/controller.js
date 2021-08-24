@@ -70,9 +70,22 @@ exports.userLoginController = (req,res) => {
 
 // get users
 exports.getUsers = (req,res) => {
-    res.json({
-        message: "Authentic user, you can see the users secret page."
-    })
+    User.find({email:req.userData.email}).exec().then(user=>{
+        if(user.length < 1){
+            return res.json({
+                message:"User not find."
+            });
+        }  
+        res.json({
+            email : user[0].name,
+            phone: user[0].phone,
+            address: user[0].address
+        })
+    }).catch(err => {
+      res.json({
+          message : "ERROR : ${err}, occured!"
+      })  
+    })    
 }
 
 //change Password
@@ -163,6 +176,7 @@ exports.resetPassword = (req,res) => {
                 if(hash){
                     //console.log(req.userData);
                     user[0].password = hash;
+                    user[0].resetToken = null;
                     user[0].save().then(result => {
                         res.json({
                             message:"Password reset successfully!"
@@ -185,22 +199,53 @@ exports.resetPassword = (req,res) => {
                 error: err
             });
         });
-    // bCrypt.hash(newPassword, 10, (err,hash)=>{
-    //     if(hash){
-    //         req.userData.password = hash;
-    //         req.userData.save().then(result => {
-    //             res.json({
-    //                 message:"Password updated successfully!"
-    //             })
-    //         }).catch(err => {
-    //             res.json({
-    //                 message:"Password updation failed due to : ${err}"
-    //             })
-    //         })
-    //     }else{
-    //         res.json({
-    //             message:"Couldn't hash the password"
-    //         })
-    //     }
-    // })
 }
+
+
+exports.imageUpload = (req,res) => {
+    User.find({email: req.userData.email})
+    .exec()
+    .then(user =>{
+        if(user.length < 1){
+            return res.status(401).json({
+                message : "Email not found."
+            });
+        }
+        user[0].image = req.file.path;
+        user[0].save().then(result => {
+            res.json({
+                message:"Image saved!"
+            })
+        }).catch(err => {
+            res.json({
+                message:"IMage not saved."
+            })
+        })
+    })
+    .catch(err => {
+        console.log("ERROR",err);
+        return res.status(500).json({
+            error: err
+        });
+    });
+}
+
+exports.fetchImage = (req,res) => {
+    User.find({email: req.userData.email})
+    .exec()
+    .then(user =>{
+        if(user.length < 1){
+            return res.status(401).json({
+                message : "Email not found."
+            });
+        }
+        res.json({
+            imageUrl: user[0].image
+        })
+    })
+    .catch(err => {
+        console.log("ERROR",err);
+        return res.status(500).json({
+            error: err
+        });
+    });}

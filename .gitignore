@@ -50,3 +50,5 @@ Thumbs.db
 
 node_modules/
 uploads/
+models/permissions.js
+models/roles.js

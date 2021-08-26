@@ -9,7 +9,8 @@ const userSchema = mongoose.Schema(
         phone: {type: Number, required:true},
         address: {type: String, required: true},
         resetToken: ({type: String}),
-        image: {type:String, required:true}
+        image: {type:String},
+        userType: {type: String, enum : ['user','admin'], default: 'user'}
     },
     {
         timestamps: true

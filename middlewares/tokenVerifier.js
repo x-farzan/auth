@@ -15,7 +15,7 @@ exports.tokenVerifier = (req,res,next) =>{
         const token = req.headers.authorization.split(" ")[1];
         jwt.verify(token, process.env.JWT_KEY, (err,auth) => {
             if(auth){
-                console.log(auth);
+                //console.log(auth);
                 req.userData = auth;
                 next();
             } 

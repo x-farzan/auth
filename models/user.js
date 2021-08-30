@@ -1,3 +1,4 @@
+const { ObjectID } = require('bson');
 const mongoose = require('mongoose');
 
 const userSchema = mongoose.Schema(
@@ -10,7 +11,8 @@ const userSchema = mongoose.Schema(
         address: {type: String, required: true},
         resetToken: ({type: String}),
         image: {type:String},
-        userType: {type: String, enum : ['user','admin'], default: 'user'}
+        userType: {type: String, enum : ['user','admin'], default: 'user'},
+        role: {type: ObjectID, enum : ['612cbeacfdb1b214a8a00680','612cbeacfdb1b214a8a00681'], default:'612cbeacfdb1b214a8a00680'}
     },
     {
         timestamps: true

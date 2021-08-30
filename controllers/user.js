@@ -8,6 +8,7 @@ const validator = require('validator');
 const userFieldsValidator = require('../utils/utils')
 const express = require('express')
 const router = express.Router();
+const Permission = require('../models/permissions');
 
 
 exports.changePassword = (req,res) => {
@@ -137,4 +138,10 @@ exports.imageUpload = (req,res) => {
             error: err
         });
     });
+}
+
+exports.seePermissions = (req,res) => {
+    res.json({
+        message: `User is allowed to ${req.perm[0].name} and ${req.perm[1].name}`
+    })
 }

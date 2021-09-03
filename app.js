@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const morgan = require('morgan');
 const userRouter = require('./routes/user');
 const authRouter = require('./routes/auth');
+const adminRouter = require('./routes/admin');
 dotenv.config();
 const port = process.env.PORT || 8080;
 
@@ -38,3 +39,6 @@ app.use('/', authRouter)
 
 //forwarding requests to routes
 app.use('/user', userRouter);
+
+//forwarding requests to admin
+app.use('/admin', adminRouter);

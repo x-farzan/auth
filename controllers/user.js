@@ -9,6 +9,7 @@ const userFieldsValidator = require('../utils/utils')
 const express = require('express')
 const router = express.Router();
 const Permission = require('../models/permissions');
+const Music = require('../models/music')
 
 
 exports.changePassword = (req,res) => {
@@ -141,7 +142,44 @@ exports.imageUpload = (req,res) => {
 }
 
 exports.seePermissions = (req,res) => {
-    res.json({
-        message: `User is allowed to ${req.perm[0].name} and ${req.perm[1].name}`
+    // console.log(req.perm.perm[0]);
+    // console.log(req.perm.perm[0][0].name);
+    // console.log(req.perm.str);
+    if(req.perm.perm[0][0].name === req.perm.str || req.perm.perm[1][0].name === req.perm.str){
+        res.json({
+            message: `User is authorized to ${req.perm.str}`
+        })
+    }
+    else{
+        res.json({
+            message: `User is unauthorized`
+        })
+    }
+
+}
+
+exports.getMusic = (req,res) => {
+
+    // console.log(req.perm.perm);
+    Music.find().exec().then(music => {
+        if(music.length < 1){
+            res.json({
+                message: `Music not found`
+            })
+        }
+        res.json({
+            music: music
+        })
     })
+    // if(req.perm.perm[2].name === req.perm.str || req.perm.perm[1].name === req.perm.str){
+    //     res.json({
+    //         message: `User is authorized to ${req.perm.str}`
+    //     })
+    // }
+    // else{
+    //     res.json({
+    //         message: `User is unauthorized`
+    //     })
+    // }
+    
 }

@@ -32,6 +32,23 @@ const permissions = [
         name:'delete-user',
         group: 'admin'
     }),
+    //
+    new Permissions({
+        name:'create-music',
+        group: 'admin'
+    }),
+    new Permissions({
+        name:'view-music',
+        group: 'user'
+    }),
+    new Permissions({
+        name:'update-music',
+        group: 'admin'
+    }),
+    new Permissions({
+        name:'delete-music',
+        group: 'admin'
+    }),
 ];
 
 var done = 0;

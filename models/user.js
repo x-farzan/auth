@@ -12,7 +12,7 @@ const userSchema = mongoose.Schema(
         resetToken: ({type: String}),
         image: {type:String},
         userType: {type: String, enum : ['user','admin'], default: 'user'},
-        role: {type: ObjectID, enum : ['612cbeacfdb1b214a8a00680','612cbeacfdb1b214a8a00681'], default:'612cbeacfdb1b214a8a00680'}
+        role: {type: ObjectID, enum : ['6131c1df725e0e27ac336768','6131c1df725e0e27ac336769'], default:'6131c1df725e0e27ac336768'}
     },
     {
         timestamps: true

@@ -19,11 +19,11 @@ Permissions.find().exec().then(result => {
     const roles = [
     new Roles({
         name:'user',
-        permission: [result[0]._id, result[1]._id]
+        permission: [result[0]._id, result[1]._id, result[5]._id]
     }),
     new Roles({
         name:'admin',
-        permission: [result[2]._id, result[3]._id]
+        permission: [result[2]._id, result[3]._id, result[4]._id, result[6]._id, result[7]._id]
     })
 ]
     var done = 0;
